@@ -1,0 +1,310 @@
+{
+  "dynamic_int8_cpu": {
+    "accuracy_delta": {
+      "max": 0.046875,
+      "mean": -0.07458333333333333,
+      "min": -0.3671875,
+      "n": 225,
+      "pstdev": 0.09178904000251518
+    },
+    "best_deployment_improvement": {
+      "max": 0.7602426917957812,
+      "mean": 0.5665750166455592,
+      "min": 0.48213671556240517,
+      "n": 225,
+      "pstdev": 0.04886143203777358
+    },
+    "dynamic_int8_cpu_gate_summary": {
+      "mean_accuracy_delta": -0.07458333333333333,
+      "mean_best_deployment_improvement": 0.5665750166455592,
+      "mean_latency_reduction": 0.35207131287826476,
+      "mean_macro_f1_delta": -0.1161724769612764,
+      "mean_model_size_reduction": 0.5220149675637632,
+      "mean_peak_memory_reduction": 0.0,
+      "mean_throughput_gain": 0.5464898306942984,
+      "noninferior_cells": 46,
+      "paired_cells": 225,
+      "passes": false
+    },
+    "formal_gate_status": "WEAK_TRADEOFF_STOP",
+    "macro_f1_delta": {
+      "max": 0.1417831624728177,
+      "mean": -0.1161724769612764,
+      "min": -0.47996619317439915,
+      "n": 225,
+      "pstdev": 0.13932638495299718
+    },
+    "noninferior_cells": 46,
+    "paired_cells": 225,
+    "severe_quality_cell_count": 102,
+    "severe_quality_cells": [
+      {
+        "accuracy_delta": -0.046875,
+        "backbone": "albert-base-v2",
+        "budget": 64,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.11635216338039273,
+        "seed": 2
+      },
+      {
+        "accuracy_delta": -0.16015625,
+        "backbone": "albert-base-v2",
+        "budget": 64,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.2557257875376795,
+        "seed": 4
+      },
+      {
+        "accuracy_delta": -0.26953125,
+        "backbone": "albert-base-v2",
+        "budget": 64,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.36159405414225637,
+        "seed": 5
+      },
+      {
+        "accuracy_delta": -0.32421875,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.3964920643646072,
+        "seed": 1
+      },
+      {
+        "accuracy_delta": -0.2890625,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.39365430149960534,
+        "seed": 2
+      },
+      {
+        "accuracy_delta": -0.34765625,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.41809388424953525,
+        "seed": 3
+      },
+      {
+        "accuracy_delta": -0.33203125,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.4590477692849559,
+        "seed": 4
+      },
+      {
+        "accuracy_delta": -0.328125,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.47014925373134325,
+        "seed": 5
+      },
+      {
+        "accuracy_delta": -0.2734375,
+        "backbone": "albert-base-v2",
+        "budget": 256,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.2896826649664891,
+        "seed": 1
+      },
+      {
+        "accuracy_delta": -0.3671875,
+        "backbone": "albert-base-v2",
+        "budget": 256,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.44351159660853356,
+        "seed": 2
+      },
+      {
+        "accuracy_delta": -0.3515625,
+        "backbone": "albert-base-v2",
+        "budget": 256,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.39610576190623825,
+        "seed": 3
+      },
+      {
+        "accuracy_delta": -0.3359375,
+        "backbone": "albert-base-v2",
+        "budget": 256,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.47996619317439915,
+        "seed": 4
+      },
+      {
+        "accuracy_delta": -0.09375,
+        "backbone": "albert-base-v2",
+        "budget": 64,
+        "dataset": "mrpc",
+        "macro_f1_delta": -0.2299838748491031,
+        "seed": 1
+      },
+      {
+        "accuracy_delta": -0.171875,
+        "backbone": "albert-base-v2",
+        "budget": 64,
+        "dataset": "mrpc",
+        "macro_f1_delta": -0.3138538410140867,
+        "seed": 3
+      },
+      {
+        "accuracy_delta": -0.12890625,
+        "backbone": "albert-base-v2",
+        "budget": 64,
+        "dataset": "mrpc",
+        "macro_f1_delta": -0.2942944782144917,
+        "seed": 4
+      },
+      {
+        "accuracy_delta": -0.171875,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "mrpc",
+        "macro_f1_delta": -0.22467155791409277,
+        "seed": 1
+      },
+      {
+        "accuracy_delta": -0.17578125,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "mrpc",
+        "macro_f1_delta": -0.33865205093682005,
+        "seed": 2
+      },
+      {
+        "accuracy_delta": -0.09375,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "mrpc",
+        "macro_f1_delta": -0.2531220876048463,
+        "seed": 4
+      },
+      {
+        "accuracy_delta": -0.13671875,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "mrpc",
+        "macro_f1_delta": -0.21738851236219658,
+        "seed": 5
+      },
+      {
+        "accuracy_delta": -0.28515625,
+        "backbone": "albert-base-v2",
+        "budget": 256,
+        "dataset": "mrpc",
+        "macro_f1_delta": -0.43300425902837464,
+        "seed": 1
+      }
+    ]
+  },
+  "gate": {
+    "gate": {
+      "expected_paired_cells": 225,
+      "fragile_methods": [
+        "dynamic_int8_cpu"
+      ],
+      "margin": -0.01,
+      "max_mean_quality_drop": 0.08,
+      "method_summaries": {
+        "bf16_gpu": {
+          "mean_accuracy_delta": 6.944444444444444e-05,
+          "mean_best_deployment_improvement": 29.255056681265454,
+          "mean_latency_reduction": 0.9576457109165043,
+          "mean_macro_f1_delta": 2.1365457138038144e-05,
+          "mean_model_size_reduction": 0.0,
+          "mean_peak_memory_reduction": 0.0,
+          "mean_throughput_gain": 29.255056681265454,
+          "noninferior_cells": 222,
+          "paired_cells": 225,
+          "passes": true
+        },
+        "dynamic_int8_cpu": {
+          "mean_accuracy_delta": -0.07458333333333333,
+          "mean_best_deployment_improvement": 0.5665750166455592,
+          "mean_latency_reduction": 0.35207131287826476,
+          "mean_macro_f1_delta": -0.1161724769612764,
+          "mean_model_size_reduction": 0.5220149675637632,
+          "mean_peak_memory_reduction": 0.0,
+          "mean_throughput_gain": 0.5464898306942984,
+          "noninferior_cells": 46,
+          "paired_cells": 225,
+          "passes": false
+        },
+        "fp32_gpu": {
+          "mean_accuracy_delta": 0.0,
+          "mean_best_deployment_improvement": 32.739330610307576,
+          "mean_latency_reduction": 0.9646395056804028,
+          "mean_macro_f1_delta": 0.0,
+          "mean_model_size_reduction": 0.0,
+          "mean_peak_memory_reduction": 0.0,
+          "mean_throughput_gain": 32.739330610307576,
+          "noninferior_cells": 225,
+          "paired_cells": 225,
+          "passes": true
+        }
+      },
+      "min_deployment_improvement": 0.25,
+      "passing_methods": [],
+      "reference_method": "fp32_cpu",
+      "stable_methods": [],
+      "status": "WEAK_TRADEOFF_STOP",
+      "strict_noninferiority_status": "WEAK_SIGNAL_STOP",
+      "tradeoff_methods": []
+    },
+    "gate_mode": "tradeoff",
+    "matrix": "formal",
+    "method_summary": {
+      "bf16_gpu": {
+        "mean_accuracy": 0.6466145833333333,
+        "mean_accuracy_delta": 6.944444444444444e-05,
+        "mean_best_deployment_improvement": 29.255056681265454,
+        "mean_latency_ms_per_example": 0.8474711091424751,
+        "mean_macro_f1": 0.6246212557186264,
+        "mean_macro_f1_delta": 2.1365457138038144e-05,
+        "mean_model_size_mb": 239.25408109029135,
+        "mean_peak_memory_mb": 373.1023849826389,
+        "mean_throughput_examples_per_second": 1251.9923276061172,
+        "n": 225
+      },
+      "dynamic_int8_cpu": {
+        "mean_accuracy": 0.5719618055555555,
+        "mean_accuracy_delta": -0.07458333333333333,
+        "mean_best_deployment_improvement": 0.5665750166455592,
+        "mean_latency_ms_per_example": 16.94229320356593,
+        "mean_macro_f1": 0.5084274133002119,
+        "mean_macro_f1_delta": -0.1161724769612764,
+        "mean_model_size_mb": 109.24908192952473,
+        "mean_peak_memory_mb": 0.0,
+        "mean_throughput_examples_per_second": 84.48906286092543,
+        "n": 225
+      },
+      "fp32_cpu": {
+        "mean_accuracy": 0.6465451388888889,
+        "mean_latency_ms_per_example": 25.997125251576342,
+        "mean_macro_f1": 0.6245998902614883,
+        "mean_model_size_mb": 239.25408109029135,
+        "mean_peak_memory_mb": 0.0,
+        "mean_throughput_examples_per_second": 54.40361682060597,
+        "n": 225
+      },
+      "fp32_gpu": {
+        "mean_accuracy": 0.6465451388888889,
+        "mean_accuracy_delta": 0.0,
+        "mean_best_deployment_improvement": 32.739330610307576,
+        "mean_latency_ms_per_example": 0.7370940611909944,
+        "mean_macro_f1": 0.6245998902614883,
+        "mean_macro_f1_delta": 0.0,
+        "mean_model_size_mb": 239.25408109029135,
+        "mean_peak_memory_mb": 283.7011263020833,
+        "mean_throughput_examples_per_second": 1464.2644597861597,
+        "n": 225
+      }
+    },
+    "n_rows": 900,
+    "results": "data/formal_matrix_20260725.csv",
+    "status": "WEAK_TRADEOFF_STOP"
+  }
+}

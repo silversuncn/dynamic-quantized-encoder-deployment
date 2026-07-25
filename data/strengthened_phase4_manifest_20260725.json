@@ -1,0 +1,19 @@
+{
+  "artifacts": {
+    "figures": {
+      "generated": [
+        "figures/strengthened_dynamic_int8_macro_f1_delta.png",
+        "figures/strengthened_method_tradeoff_summary.png"
+      ],
+      "status": "PASS"
+    },
+    "group_summary_csv": "data/strengthened_phase4_group_summary_20260725.csv",
+    "method_summary_csv": "data/strengthened_phase4_method_summary_20260725.csv",
+    "paired_deltas_csv": "data/strengthened_phase4_paired_deltas_20260725.csv",
+    "statistics_json": "data/strengthened_phase4_statistics_20260725.json",
+    "strengthened_trigger_json": "data/strengthened_phase4_strengthened_trigger_20260725.json"
+  },
+  "results": "data/strengthened_matrix_20260725.csv",
+  "status": "PASS_PHASE4_ANALYSIS",
+  "summary": "data/strengthened_matrix_summary_20260725.json"
+}

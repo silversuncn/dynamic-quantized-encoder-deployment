@@ -1,0 +1,205 @@
+{
+  "dynamic_int8_cpu": {
+    "accuracy_delta": {
+      "max": 0.046875,
+      "mean": -0.07458333333333333,
+      "min": -0.3671875,
+      "n": 225,
+      "pstdev": 0.09178904000251518
+    },
+    "best_deployment_improvement": {
+      "max": 0.7602426917957812,
+      "mean": 0.5665750166455592,
+      "min": 0.48213671556240517,
+      "n": 225,
+      "pstdev": 0.04886143203777358
+    },
+    "dynamic_int8_cpu_gate_summary": {
+      "mean_accuracy_delta": -0.07458333333333333,
+      "mean_best_deployment_improvement": 0.5665750166455592,
+      "mean_latency_reduction": 0.35207131287826476,
+      "mean_macro_f1_delta": -0.1161724769612764,
+      "mean_model_size_reduction": 0.5220149675637632,
+      "mean_peak_memory_reduction": 0.0,
+      "mean_throughput_gain": 0.5464898306942984,
+      "noninferior_cells": 46,
+      "paired_cells": 225,
+      "passes": false
+    },
+    "formal_gate_status": "WEAK_TRADEOFF_STOP",
+    "macro_f1_delta": {
+      "max": 0.1417831624728177,
+      "mean": -0.1161724769612764,
+      "min": -0.47996619317439915,
+      "n": 225,
+      "pstdev": 0.13932638495299718
+    },
+    "noninferior_cells": 46,
+    "paired_cells": 225,
+    "severe_quality_cell_count": 102,
+    "severe_quality_cells": [
+      {
+        "accuracy_delta": -0.046875,
+        "backbone": "albert-base-v2",
+        "budget": 64,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.11635216338039273,
+        "seed": 2
+      },
+      {
+        "accuracy_delta": -0.16015625,
+        "backbone": "albert-base-v2",
+        "budget": 64,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.2557257875376795,
+        "seed": 4
+      },
+      {
+        "accuracy_delta": -0.26953125,
+        "backbone": "albert-base-v2",
+        "budget": 64,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.36159405414225637,
+        "seed": 5
+      },
+      {
+        "accuracy_delta": -0.32421875,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.3964920643646072,
+        "seed": 1
+      },
+      {
+        "accuracy_delta": -0.2890625,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.39365430149960534,
+        "seed": 2
+      },
+      {
+        "accuracy_delta": -0.34765625,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.41809388424953525,
+        "seed": 3
+      },
+      {
+        "accuracy_delta": -0.33203125,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.4590477692849559,
+        "seed": 4
+      },
+      {
+        "accuracy_delta": -0.328125,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.47014925373134325,
+        "seed": 5
+      },
+      {
+        "accuracy_delta": -0.2734375,
+        "backbone": "albert-base-v2",
+        "budget": 256,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.2896826649664891,
+        "seed": 1
+      },
+      {
+        "accuracy_delta": -0.3671875,
+        "backbone": "albert-base-v2",
+        "budget": 256,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.44351159660853356,
+        "seed": 2
+      },
+      {
+        "accuracy_delta": -0.3515625,
+        "backbone": "albert-base-v2",
+        "budget": 256,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.39610576190623825,
+        "seed": 3
+      },
+      {
+        "accuracy_delta": -0.3359375,
+        "backbone": "albert-base-v2",
+        "budget": 256,
+        "dataset": "sst2",
+        "macro_f1_delta": -0.47996619317439915,
+        "seed": 4
+      },
+      {
+        "accuracy_delta": -0.09375,
+        "backbone": "albert-base-v2",
+        "budget": 64,
+        "dataset": "mrpc",
+        "macro_f1_delta": -0.2299838748491031,
+        "seed": 1
+      },
+      {
+        "accuracy_delta": -0.171875,
+        "backbone": "albert-base-v2",
+        "budget": 64,
+        "dataset": "mrpc",
+        "macro_f1_delta": -0.3138538410140867,
+        "seed": 3
+      },
+      {
+        "accuracy_delta": -0.12890625,
+        "backbone": "albert-base-v2",
+        "budget": 64,
+        "dataset": "mrpc",
+        "macro_f1_delta": -0.2942944782144917,
+        "seed": 4
+      },
+      {
+        "accuracy_delta": -0.171875,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "mrpc",
+        "macro_f1_delta": -0.22467155791409277,
+        "seed": 1
+      },
+      {
+        "accuracy_delta": -0.17578125,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "mrpc",
+        "macro_f1_delta": -0.33865205093682005,
+        "seed": 2
+      },
+      {
+        "accuracy_delta": -0.09375,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "mrpc",
+        "macro_f1_delta": -0.2531220876048463,
+        "seed": 4
+      },
+      {
+        "accuracy_delta": -0.13671875,
+        "backbone": "albert-base-v2",
+        "budget": 128,
+        "dataset": "mrpc",
+        "macro_f1_delta": -0.21738851236219658,
+        "seed": 5
+      },
+      {
+        "accuracy_delta": -0.28515625,
+        "backbone": "albert-base-v2",
+        "budget": 256,
+        "dataset": "mrpc",
+        "macro_f1_delta": -0.43300425902837464,
+        "seed": 1
+      }
+    ]
+  },
+  "reason": "severe dynamic_int8_cpu quality-drop cells beyond -0.08 floor",
+  "status": "TRIGGER_STRENGTHENED_REVIEW"
+}

@@ -1,0 +1,107 @@
+{
+  "gate": {
+    "expected_paired_cells": 90,
+    "fragile_methods": [
+      "dynamic_int8_cpu"
+    ],
+    "margin": -0.01,
+    "max_mean_quality_drop": 0.08,
+    "method_summaries": {
+      "bf16_gpu": {
+        "mean_accuracy_delta": -0.00034722222222222224,
+        "mean_best_deployment_improvement": 26.953397681708836,
+        "mean_latency_reduction": 0.954239999313828,
+        "mean_macro_f1_delta": -0.000274947941140531,
+        "mean_model_size_reduction": 0.0,
+        "mean_peak_memory_reduction": 0.0,
+        "mean_throughput_gain": 26.953397681708836,
+        "noninferior_cells": 86,
+        "paired_cells": 90,
+        "passes": true
+      },
+      "dynamic_int8_cpu": {
+        "mean_accuracy_delta": -0.09027777777777778,
+        "mean_best_deployment_improvement": 0.5567679163909113,
+        "mean_latency_reduction": 0.32615371548643013,
+        "mean_macro_f1_delta": -0.14943135581094283,
+        "mean_model_size_reduction": 0.5419540935644422,
+        "mean_peak_memory_reduction": 0.0,
+        "mean_throughput_gain": 0.48981321358329044,
+        "noninferior_cells": 10,
+        "paired_cells": 90,
+        "passes": false
+      },
+      "fp32_gpu": {
+        "mean_accuracy_delta": 0.0,
+        "mean_best_deployment_improvement": 29.510860536807282,
+        "mean_latency_reduction": 0.9595858944454904,
+        "mean_macro_f1_delta": 0.0,
+        "mean_model_size_reduction": 0.0,
+        "mean_peak_memory_reduction": 0.0,
+        "mean_throughput_gain": 29.510860536807282,
+        "noninferior_cells": 90,
+        "paired_cells": 90,
+        "passes": true
+      }
+    },
+    "min_deployment_improvement": 0.25,
+    "passing_methods": [],
+    "reference_method": "fp32_cpu",
+    "stable_methods": [],
+    "status": "WEAK_TRADEOFF_STOP",
+    "strict_noninferiority_status": "WEAK_SIGNAL_STOP",
+    "tradeoff_methods": []
+  },
+  "gate_mode": "tradeoff",
+  "matrix": "strengthened",
+  "method_summary": {
+    "bf16_gpu": {
+      "mean_accuracy": 0.6480902777777777,
+      "mean_accuracy_delta": -0.00034722222222222224,
+      "mean_best_deployment_improvement": 26.953397681708836,
+      "mean_latency_ms_per_example": 1.2382575029253973,
+      "mean_macro_f1": 0.6257869300950819,
+      "mean_macro_f1_delta": -0.000274947941140531,
+      "mean_model_size_mb": 231.1550898551941,
+      "mean_peak_memory_mb": 369.73824327256943,
+      "mean_throughput_examples_per_second": 844.4719121569763,
+      "n": 90
+    },
+    "dynamic_int8_cpu": {
+      "mean_accuracy": 0.5581597222222222,
+      "mean_accuracy_delta": -0.09027777777777778,
+      "mean_best_deployment_improvement": 0.5567679163909113,
+      "mean_latency_ms_per_example": 22.272972017691,
+      "mean_macro_f1": 0.4766305222252796,
+      "mean_macro_f1_delta": -0.14943135581094283,
+      "mean_model_size_mb": 97.72900056838989,
+      "mean_peak_memory_mb": 0.0,
+      "mean_throughput_examples_per_second": 55.053221863364435,
+      "n": 90
+    },
+    "fp32_cpu": {
+      "mean_accuracy": 0.6484375,
+      "mean_latency_ms_per_example": 32.88851274970496,
+      "mean_macro_f1": 0.6260618780362224,
+      "mean_model_size_mb": 231.1550898551941,
+      "mean_peak_memory_mb": 0.0,
+      "mean_throughput_examples_per_second": 36.880887315619766,
+      "n": 90
+    },
+    "fp32_gpu": {
+      "mean_accuracy": 0.6484375,
+      "mean_accuracy_delta": 0.0,
+      "mean_best_deployment_improvement": 29.510860536807282,
+      "mean_latency_ms_per_example": 1.1084131795834113,
+      "mean_macro_f1": 0.6260618780362224,
+      "mean_macro_f1_delta": 0.0,
+      "mean_model_size_mb": 231.1550898551941,
+      "mean_peak_memory_mb": 276.4668674045139,
+      "mean_throughput_examples_per_second": 937.7000380513525,
+      "n": 90
+    }
+  },
+  "n_rows": 360,
+  "results": "data/strengthened_matrix_20260725.csv",
+  "status": "WEAK_STRENGTHENED_TRADEOFF_STOP"
+}
