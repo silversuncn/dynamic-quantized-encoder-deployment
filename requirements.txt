@@ -3,3 +3,4 @@ transformers
 datasets
 scikit-learn
 matplotlib
+scipy

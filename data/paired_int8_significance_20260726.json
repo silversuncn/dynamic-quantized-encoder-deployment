@@ -1,0 +1,51 @@
+{
+  "interpretation": "Two-sided paired t-tests evaluate whether the mean deployment delta differs from zero. Wilson intervals summarize cell-count proportions; they do not replace the practical non-inferiority and severe-drop gates.",
+  "method": "dynamic_int8_cpu",
+  "paired_cells": 225,
+  "proportions": {
+    "noninferior_cells": {
+      "ci_high": 0.2618929040108416,
+      "ci_low": 0.15691870169470284,
+      "confidence": 0.95,
+      "n": 225,
+      "proportion": 0.20444444444444446,
+      "successes": 46
+    },
+    "severe_quality_cells": {
+      "ci_high": 0.5186201478383818,
+      "ci_low": 0.3896132635888094,
+      "confidence": 0.95,
+      "n": 225,
+      "proportion": 0.4533333333333333,
+      "successes": 102
+    }
+  },
+  "source": "18_Dynamic-Quantized-Encoder-Deployment/01_experiment/raw_data/formal_phase4_20260725/formal_phase4_paired_deltas_20260725.csv",
+  "status": "PASS_PAIRED_STATISTICAL_TESTS",
+  "tests": {
+    "accuracy_delta_vs_fp32_cpu": {
+      "ci_high": -0.0624977473455971,
+      "ci_low": -0.08666891932106957,
+      "confidence": 0.95,
+      "degrees_of_freedom": 224,
+      "mean_delta": -0.07458333333333333,
+      "n": 225,
+      "p_value_two_sided": 1.8389089181749465e-26,
+      "sample_sd": 0.09199369809383029,
+      "standard_error": 0.0061329132062553525,
+      "t_statistic": -12.16115911395273
+    },
+    "macro_f1_delta_vs_fp32_cpu": {
+      "ci_high": -0.0978277921746859,
+      "ci_low": -0.1345171617478669,
+      "confidence": 0.95,
+      "degrees_of_freedom": 224,
+      "mean_delta": -0.1161724769612764,
+      "n": 225,
+      "p_value_two_sided": 1.7499788402553498e-27,
+      "sample_sd": 0.13963703502639954,
+      "standard_error": 0.009309135668426637,
+      "t_statistic": -12.479405295949569
+    }
+  }
+}
