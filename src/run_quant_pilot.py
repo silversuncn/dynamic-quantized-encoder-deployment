@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run Paper18 v3 dynamic quantization micro/bounded/formal matrices."""
+"""Run dynamic quantization micro, bounded, and formal matrices."""
 
 from __future__ import annotations
 

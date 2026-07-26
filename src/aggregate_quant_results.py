@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Aggregate Paper18 v3 dynamic quantization results and apply gates."""
+"""Aggregate dynamic quantization results and apply deployment gates."""
 
 from __future__ import annotations
 

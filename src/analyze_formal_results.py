@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Produce local Phase 4 summaries for Paper18 formal matrix results."""
+"""Produce formal matrix summaries and publication-quality figures."""
 
 from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import math
 from collections import defaultdict
@@ -30,6 +31,67 @@ METRIC_FIELDS = [
     "throughput_gain_vs_fp32_cpu",
     "best_deployment_improvement_vs_fp32_cpu",
 ]
+
+COLORS = {
+    "blue": "#2f63a4",
+    "teal": "#278b7e",
+    "gold": "#be8723",
+    "red": "#a64a4a",
+    "orange": "#c7782b",
+    "gray": "#64707c",
+    "grid": "#d8dee6",
+    "ink": "#1f262e",
+}
+
+FIGURE_SPECS = {
+    "method_tradeoff_summary": {"size": (3.45, 2.65), "placement": "one_column"},
+    "dynamic_int8_macro_f1_delta": {"size": (3.45, 4.25), "placement": "one_column"},
+}
+
+FONT_POLICY = {
+    "axis_label_pt": 8,
+    "tick_label_pt": 7,
+    "legend_pt": 7,
+    "annotation_pt": 7,
+    "facet_label_pt": 8,
+}
+
+FIGURE_OUTPUT_POLICY = {
+    "png_dpi": 600,
+    "pdf_fonttype": 42,
+    "ps_fonttype": 42,
+    "bbox_inches": "tight",
+    "pad_inches": 0.025,
+}
+
+DATASET_LABELS = {
+    "cola": "CoLA",
+    "mrpc": "MRPC",
+    "qqp": "QQP",
+    "rte": "RTE",
+    "sst2": "SST-2",
+}
+DATASET_ORDER = ["cola", "mrpc", "qqp", "rte", "sst2"]
+
+BACKBONE_LABELS = {
+    "albert-base-v2": "ALBERT",
+    "bert-base-uncased": "BERT",
+    "distilbert-base-uncased": "DistilBERT",
+}
+BACKBONE_ORDER = ["albert-base-v2", "bert-base-uncased", "distilbert-base-uncased"]
+
+BUDGET_ORDER = [64, 128, 256]
+
+METHOD_LABELS = {
+    "dynamic_int8_cpu": "INT8 CPU",
+    "fp32_gpu": "GPU FP32",
+    "bf16_gpu": "GPU BF16",
+}
+METHOD_COLORS = {
+    "dynamic_int8_cpu": COLORS["blue"],
+    "fp32_gpu": COLORS["teal"],
+    "bf16_gpu": COLORS["gold"],
+}
 
 
 def finite_float(value: object) -> float | None:
@@ -76,7 +138,7 @@ def group_mean_rows(rows: list[dict[str, object]], keys: tuple[str, ...]) -> lis
 
     out_rows: list[dict[str, object]] = []
     for key_values, group in sorted(grouped.items(), key=lambda item: tuple(str(value) for value in item[0])):
-        out: dict[str, object] = dict(zip(keys, key_values))
+        out: dict[str, object] = dict(zip(keys, key_values, strict=True))
         out["n"] = len(group)
         for field in METRIC_FIELDS:
             values = [value for value in (finite_float(row.get(field)) for row in group) if value is not None]
@@ -84,6 +146,10 @@ def group_mean_rows(rows: list[dict[str, object]], keys: tuple[str, ...]) -> lis
                 out[f"mean_{field}"] = mean(values)
         out_rows.append(out)
     return out_rows
+
+
+def sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def describe(values: Iterable[float]) -> dict[str, object]:
@@ -143,6 +209,159 @@ def dynamic_int8_stats(rows: list[dict[str, object]], gate: dict[str, object]) -
     }
 
 
+def configure_matplotlib(matplotlib: object, plt: object) -> None:
+    matplotlib.rcParams.update(
+        {
+            "font.family": "DejaVu Sans",
+            "font.size": FONT_POLICY["axis_label_pt"],
+            "axes.labelsize": FONT_POLICY["axis_label_pt"],
+            "xtick.labelsize": FONT_POLICY["tick_label_pt"],
+            "ytick.labelsize": FONT_POLICY["tick_label_pt"],
+            "legend.fontsize": FONT_POLICY["legend_pt"],
+            "pdf.fonttype": FIGURE_OUTPUT_POLICY["pdf_fonttype"],
+            "ps.fonttype": FIGURE_OUTPUT_POLICY["ps_fonttype"],
+            "axes.edgecolor": COLORS["ink"],
+            "axes.labelcolor": COLORS["ink"],
+            "xtick.color": COLORS["ink"],
+            "ytick.color": COLORS["ink"],
+            "text.color": COLORS["ink"],
+        }
+    )
+    plt.rcParams.update(matplotlib.rcParams)
+
+
+def save_figure(fig: object, figure_dir: Path, stem: str) -> dict[str, object]:
+    figure_dir.mkdir(parents=True, exist_ok=True)
+    pdf_path = figure_dir / f"{stem}.pdf"
+    png_path = figure_dir / f"{stem}.png"
+    save_kwargs = {
+        "bbox_inches": FIGURE_OUTPUT_POLICY["bbox_inches"],
+        "pad_inches": FIGURE_OUTPUT_POLICY["pad_inches"],
+    }
+    fig.savefig(pdf_path, **save_kwargs)
+    fig.savefig(png_path, dpi=FIGURE_OUTPUT_POLICY["png_dpi"], **save_kwargs)
+    return {
+        "pdf": {"path": str(pdf_path), "sha256": sha256(pdf_path), "size": pdf_path.stat().st_size},
+        "png": {"path": str(png_path), "sha256": sha256(png_path), "size": png_path.stat().st_size},
+    }
+
+
+def present_backbones(rows: list[dict[str, object]]) -> list[str]:
+    seen = {str(row.get("backbone")) for row in rows}
+    ordered = [backbone for backbone in BACKBONE_ORDER if backbone in seen]
+    extras = sorted(seen.difference(ordered))
+    return ordered + extras
+
+
+def present_datasets(rows: list[dict[str, object]]) -> list[str]:
+    seen = {str(row.get("dataset")) for row in rows}
+    ordered = [dataset for dataset in DATASET_ORDER if dataset in seen]
+    extras = sorted(seen.difference(ordered))
+    return ordered + extras
+
+
+def present_budgets(rows: list[dict[str, object]]) -> list[int]:
+    budgets = {int(float(row["label_budget_per_class"])) for row in rows if row.get("label_budget_per_class") not in {"", None}}
+    ordered = [budget for budget in BUDGET_ORDER if budget in budgets]
+    extras = sorted(budgets.difference(ordered))
+    return ordered + extras
+
+
+def plot_dynamic_delta_heatmap(dyn_groups: list[dict[str, object]], figure_dir: Path, figure_prefix: str, plt: object) -> dict[str, object]:
+    from matplotlib.colors import LinearSegmentedColormap
+
+    backbones = present_backbones(dyn_groups)
+    datasets = present_datasets(dyn_groups)
+    budgets = present_budgets(dyn_groups)
+    values = {
+        (str(row["dataset"]), str(row["backbone"]), int(float(row["label_budget_per_class"]))): float(
+            row.get("mean_macro_f1_delta_vs_fp32_cpu", 0.0)
+        )
+        for row in dyn_groups
+    }
+    height = max(FIGURE_SPECS["dynamic_int8_macro_f1_delta"]["size"][1], 1.25 * len(backbones) + 0.9)
+    fig, axes = plt.subplots(
+        len(backbones),
+        1,
+        figsize=(FIGURE_SPECS["dynamic_int8_macro_f1_delta"]["size"][0], height),
+        squeeze=False,
+    )
+    cmap = LinearSegmentedColormap.from_list("dynamic_int8_delta", (COLORS["red"], "#f7f7f7", COLORS["teal"]))
+    image = None
+    for row_idx, backbone in enumerate(backbones):
+        ax = axes[row_idx][0]
+        matrix = [
+            [values.get((dataset, backbone, budget), float("nan")) for budget in budgets]
+            for dataset in datasets
+        ]
+        image = ax.imshow(matrix, cmap=cmap, aspect="auto", vmin=-0.25, vmax=0.05)
+        ax.set_xticks(range(len(budgets)), [str(budget) for budget in budgets])
+        ax.set_yticks(range(len(datasets)), [DATASET_LABELS.get(dataset, dataset) for dataset in datasets])
+        ax.tick_params(length=0, pad=1.5)
+        ax.set_ylabel(BACKBONE_LABELS.get(backbone, backbone), fontsize=FONT_POLICY["facet_label_pt"], labelpad=5)
+        for dataset_idx, dataset in enumerate(datasets):
+            for budget_idx, budget in enumerate(budgets):
+                value = values.get((dataset, backbone, budget))
+                if value is None:
+                    continue
+                text_color = "white" if value < -0.16 else COLORS["ink"]
+                ax.text(
+                    budget_idx,
+                    dataset_idx,
+                    f"{value:.2f}",
+                    ha="center",
+                    va="center",
+                    fontsize=FONT_POLICY["annotation_pt"],
+                    color=text_color,
+                )
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+        ax.set_xticks([x - 0.5 for x in range(1, len(budgets))], minor=True)
+        ax.set_yticks([y - 0.5 for y in range(1, len(datasets))], minor=True)
+        ax.grid(which="minor", color="white", linewidth=0.6)
+        ax.tick_params(which="minor", bottom=False, left=False)
+    axes[-1][0].set_xlabel("Labels per class", labelpad=2)
+    if image is not None:
+        cbar = fig.colorbar(image, ax=[ax[0] for ax in axes], fraction=0.035, pad=0.025)
+        cbar.set_label("Mean macro-F1 delta", fontsize=FONT_POLICY["tick_label_pt"], labelpad=2)
+        cbar.ax.tick_params(labelsize=FONT_POLICY["tick_label_pt"], length=2, pad=1.5)
+    fig.subplots_adjust(left=0.22, right=0.86, top=0.98, bottom=0.09, hspace=0.18)
+    return save_figure(fig, figure_dir, f"{figure_prefix}_dynamic_int8_macro_f1_delta")
+
+
+def plot_method_tradeoff(method_rows: list[dict[str, object]], figure_dir: Path, figure_prefix: str, plt: object) -> dict[str, object]:
+    methods = [
+        row
+        for row in method_rows
+        if row.get("method") != "fp32_cpu" and row.get("mean_best_deployment_improvement") not in {"", None}
+    ]
+    methods.sort(key=lambda row: ["dynamic_int8_cpu", "fp32_gpu", "bf16_gpu"].index(row["method"]) if row["method"] in METHOD_LABELS else 99)
+    labels = [METHOD_LABELS.get(str(row["method"]), str(row["method"])) for row in methods]
+    improvements = [float(row["mean_best_deployment_improvement"]) for row in methods]
+    acc = [float(row.get("mean_accuracy_delta", 0.0)) for row in methods]
+    colors = [METHOD_COLORS.get(str(row["method"]), COLORS["blue"]) for row in methods]
+    fig, axes = plt.subplots(1, 2, figsize=FIGURE_SPECS["method_tradeoff_summary"]["size"])
+    axes[0].bar(range(len(methods)), improvements, color=colors, width=0.62)
+    axes[0].axhline(0.25, color=COLORS["gray"], linestyle=":", linewidth=0.8)
+    axes[0].set_ylabel("Best deploy. impr.", labelpad=2)
+    axes[0].set_xticks(range(len(methods)), labels, rotation=25, ha="right")
+    axes[0].grid(axis="y", color=COLORS["grid"], linewidth=0.5)
+    axes[0].set_axisbelow(True)
+    axes[1].bar(range(len(methods)), acc, color=colors, width=0.62)
+    axes[1].axhline(-0.08, color=COLORS["red"], linestyle="--", linewidth=0.8)
+    axes[1].axhline(-0.01, color=COLORS["gray"], linestyle=":", linewidth=0.8)
+    axes[1].set_ylabel("Mean Acc. delta", labelpad=2)
+    axes[1].set_xticks(range(len(methods)), labels, rotation=25, ha="right")
+    axes[1].grid(axis="y", color=COLORS["grid"], linewidth=0.5)
+    axes[1].set_axisbelow(True)
+    for ax in axes:
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.tick_params(axis="both", pad=1.5)
+    fig.tight_layout(pad=0.05)
+    return save_figure(fig, figure_dir, f"{figure_prefix}_method_tradeoff_summary")
+
+
 def write_figures(
     group_rows: list[dict[str, object]],
     method_rows: list[dict[str, object]],
@@ -158,46 +377,23 @@ def write_figures(
     except Exception as exc:  # noqa: BLE001 - figure availability is environment-dependent evidence.
         return {"status": "SKIPPED", "reason": f"{type(exc).__name__}: {exc}"}
 
-    generated: list[str] = []
+    configure_matplotlib(matplotlib, plt)
+    generated: dict[str, object] = {}
     dyn_groups = [row for row in group_rows if row.get("method") == "dynamic_int8_cpu"]
     if dyn_groups:
-        labels = [f"{row['dataset']}/{row['backbone']}/{row['label_budget_per_class']}" for row in dyn_groups]
-        values = [float(row.get("mean_macro_f1_delta_vs_fp32_cpu", 0.0)) for row in dyn_groups]
-        height = max(4.0, min(14.0, 0.24 * len(labels)))
-        fig, ax = plt.subplots(figsize=(10, height))
-        ax.barh(range(len(labels)), values, color="#4C78A8")
-        ax.axvline(-0.08, color="#D62728", linestyle="--", linewidth=1)
-        ax.axvline(-0.01, color="#7F7F7F", linestyle=":", linewidth=1)
-        ax.set_yticks(range(len(labels)))
-        ax.set_yticklabels(labels, fontsize=6)
-        ax.set_xlabel("Mean macro-F1 delta vs fp32_cpu")
-        ax.set_title("Dynamic INT8 quality deltas by dataset/backbone/budget")
-        fig.tight_layout()
-        path = figure_dir / f"{figure_prefix}_dynamic_int8_macro_f1_delta.png"
-        fig.savefig(path, dpi=200)
-        plt.close(fig)
-        generated.append(str(path))
+        stem = f"{figure_prefix}_dynamic_int8_macro_f1_delta"
+        generated[stem] = plot_dynamic_delta_heatmap(dyn_groups, figure_dir, figure_prefix, plt)
+        plt.close("all")
 
-    methods = [row for row in method_rows if row.get("method") != "fp32_cpu" and row.get("mean_best_deployment_improvement") not in {"", None}]
+    methods = [
+        row
+        for row in method_rows
+        if row.get("method") != "fp32_cpu" and row.get("mean_best_deployment_improvement") not in {"", None}
+    ]
     if methods:
-        labels = [str(row["method"]) for row in methods]
-        improvements = [float(row["mean_best_deployment_improvement"]) for row in methods]
-        acc = [float(row.get("mean_accuracy_delta", 0.0)) for row in methods]
-        fig, axes = plt.subplots(1, 2, figsize=(9, 3.5))
-        axes[0].bar(labels, improvements, color="#59A14F")
-        axes[0].axhline(0.25, color="#7F7F7F", linestyle=":", linewidth=1)
-        axes[0].set_ylabel("Best deployment improvement")
-        axes[0].tick_params(axis="x", rotation=20)
-        axes[1].bar(labels, acc, color="#F28E2B")
-        axes[1].axhline(-0.08, color="#D62728", linestyle="--", linewidth=1)
-        axes[1].axhline(-0.01, color="#7F7F7F", linestyle=":", linewidth=1)
-        axes[1].set_ylabel("Mean accuracy delta")
-        axes[1].tick_params(axis="x", rotation=20)
-        fig.tight_layout()
-        path = figure_dir / f"{figure_prefix}_method_tradeoff_summary.png"
-        fig.savefig(path, dpi=200)
-        plt.close(fig)
-        generated.append(str(path))
+        stem = f"{figure_prefix}_method_tradeoff_summary"
+        generated[stem] = plot_method_tradeoff(method_rows, figure_dir, figure_prefix, plt)
+        plt.close("all")
 
     return {"status": "PASS", "generated": generated}
 
