@@ -75,40 +75,91 @@ def configure() -> tuple[object, object]:
     return matplotlib, plt
 
 
-def plot_tradeoff(method_rows: list[dict[str, str]], out_dir: Path, plt: object) -> dict[str, object]:
+def _mix(color: str, target: tuple[float, float, float], t: float) -> tuple[float, float, float]:
+    import matplotlib.colors as mcolors
+
+    rgb = mcolors.to_rgb(color)
+    return tuple(rgb[i] * (1.0 - t) + target[i] * t for i in range(3))
+
+
+def plot_tradeoff(
+    method_rows: list[dict[str, str]],
+    paired_rows: list[dict[str, str]],
+    out_dir: Path,
+    plt: object,
+) -> dict[str, object]:
+    import numpy as np
+    from matplotlib.patches import Patch
+
     rows = {row["method"]: row for row in method_rows}
     methods = [method for method in METHOD_ORDER if method in rows]
     labels = [METHOD_LABELS[method] for method in methods]
     colors = [METHOD_COLORS[method] for method in methods]
-    improvements = [float(rows[method]["mean_best_deployment_improvement"]) for method in methods]
-    acc_deltas = [float(rows[method]["mean_accuracy_delta"]) for method in methods]
 
-    fig, axes = plt.subplots(1, 2, figsize=(4.9, 2.35))
-    axes[0].bar(range(len(methods)), improvements, color=colors, width=0.62)
-    axes[0].axhline(0.25, color="#5e6873", linestyle=":", linewidth=0.9)
-    axes[0].annotate("deploy gate", xy=(2.0, 0.25), xytext=(1.55, 4.6), fontsize=7, color="#5e6873")
-    axes[0].set_ylabel("Best deployment improvement")
-    axes[0].set_title("(a) Efficiency", fontsize=9, pad=4)
-    axes[0].set_xticks(range(len(methods)), labels, rotation=20, ha="right")
-    axes[0].grid(axis="y", color=GRID, linewidth=0.55)
-    axes[0].set_axisbelow(True)
+    reductions = {method: {"size": [], "lat": [], "thru": []} for method in methods}
+    for row in paired_rows:
+        method = row["method"]
+        if method not in reductions:
+            continue
+        reductions[method]["size"].append(float(row["model_size_reduction_vs_fp32_cpu"]))
+        reductions[method]["lat"].append(float(row["latency_reduction_vs_fp32_cpu"]))
+        reductions[method]["thru"].append(float(row["throughput_gain_vs_fp32_cpu"]))
 
-    axes[1].bar(range(len(methods)), acc_deltas, color=colors, width=0.62)
-    axes[1].axhline(-0.01, color="#5e6873", linestyle=":", linewidth=0.9)
-    axes[1].axhline(-0.08, color=RED, linestyle="--", linewidth=0.9)
-    axes[1].annotate("non-inf.", xy=(1.7, -0.01), xytext=(1.55, 0.005), fontsize=7, color="#5e6873")
-    axes[1].annotate("severe", xy=(1.7, -0.08), xytext=(1.72, -0.067), fontsize=7, color=RED)
-    axes[1].set_ylim(-0.095, 0.012)
-    axes[1].set_ylabel("Mean accuracy delta")
-    axes[1].set_title("(b) Quality change", fontsize=9, pad=4)
-    axes[1].set_xticks(range(len(methods)), labels, rotation=20, ha="right")
-    axes[1].grid(axis="y", color=GRID, linewidth=0.55)
-    axes[1].set_axisbelow(True)
+    size_red = [mean(reductions[m]["size"]) for m in methods]
+    lat_red = [mean(reductions[m]["lat"]) for m in methods]
+    thru_gain = [mean(reductions[m]["thru"]) for m in methods]
+    acc_deltas = [float(rows[m]["mean_accuracy_delta"]) for m in methods]
+
+    x = np.arange(len(methods))
+    fig, axes = plt.subplots(1, 3, figsize=(7.15, 2.4))
+
+    # (a) Size and latency reduction (grouped bars, 0-1 fractions).
+    width = 0.38
+    for i, method in enumerate(methods):
+        axes[0].bar(i - width / 2, size_red[i], width, color=_mix(colors[i], (0, 0, 0), 0.24))
+        axes[0].bar(i + width / 2, lat_red[i], width, color=_mix(colors[i], (1, 1, 1), 0.45))
+    axes[0].set_ylim(0, 1.05)
+    axes[0].set_ylabel("Reduction (fraction)")
+    axes[0].set_title("(a) Size & latency", fontsize=9, pad=4)
+    axes[0].legend(
+        handles=[
+            Patch(facecolor="#4d4d4d", label="Size red."),
+            Patch(facecolor="#b7b7b7", label="Latency red."),
+        ],
+        loc="upper left",
+        frameon=False,
+        handlelength=1.1,
+        handleheight=1.1,
+        borderpad=0.2,
+        labelspacing=0.3,
+    )
+
+    # (b) Throughput gain (isolated high-magnitude axis).
+    axes[1].bar(x, thru_gain, color=colors, width=0.62)
+    axes[1].set_ylim(0, 35)
+    axes[1].set_ylabel("Throughput gain ($\\times$)")
+    axes[1].set_title("(b) Throughput", fontsize=9, pad=4)
+    for i, value in enumerate(thru_gain):
+        axes[1].text(i, value + 0.7, f"{value:.1f}", ha="center", va="bottom", fontsize=7, color=INK)
+
+    # (c) Mean accuracy delta with quality gates.
+    axes[2].bar(x, acc_deltas, color=colors, width=0.62)
+    axes[2].axhline(-0.01, color="#5e6873", linestyle=":", linewidth=0.9)
+    axes[2].axhline(-0.08, color=RED, linestyle="--", linewidth=0.9)
+    axes[2].text(len(methods) - 0.5, -0.006, "non-inf.", ha="right", va="bottom", fontsize=7, color="#5e6873")
+    axes[2].text(len(methods) - 0.5, -0.078, "severe", ha="right", va="bottom", fontsize=7, color=RED)
+    axes[2].set_ylim(-0.095, 0.02)
+    axes[2].set_ylabel("Mean accuracy delta")
+    axes[2].set_title("(c) Quality", fontsize=9, pad=4)
+
     for ax in axes:
+        ax.set_xticks(x, labels, rotation=18, ha="right")
+        ax.grid(axis="y", color=GRID, linewidth=0.55)
+        ax.set_axisbelow(True)
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
         ax.tick_params(axis="both", pad=1.5)
-    fig.tight_layout(pad=0.25, w_pad=1.4)
+    fig.tight_layout(pad=0.3, w_pad=1.2)
     return save(fig, out_dir, "formal_method_tradeoff_summary")
 
 
@@ -127,7 +178,7 @@ def plot_matrix_panel(ax: object, values: dict[tuple[str, str, int], float], bac
 
     row_keys = [(dataset, backbone) for backbone in backbones for dataset in DATASETS]
     matrix = np.array([[values.get((dataset, backbone, budget), math.nan) for budget in BUDGETS] for dataset, backbone in row_keys])
-    image = ax.imshow(matrix, cmap="RdBu", vmin=-0.28, vmax=0.06, aspect="auto")
+    image = ax.imshow(matrix, cmap="RdBu", vmin=-0.36, vmax=0.06, aspect="auto")
     labels = [f"{DATASET_LABELS[dataset]} / {BACKBONE_LABELS.get(backbone, backbone)}" for dataset, backbone in row_keys]
     ax.set_yticks(range(len(labels)), labels)
     ax.set_xticks(range(len(BUDGETS)), [str(budget) for budget in BUDGETS])
@@ -149,7 +200,7 @@ def plot_matrix_panel(ax: object, values: dict[tuple[str, str, int], float], bac
                 ha="center",
                 va="center",
                 fontsize=7.5,
-                color="white" if value < -0.15 else INK,
+                color="white" if value < -0.26 else INK,
             )
     for spine in ax.spines.values():
         spine.set_visible(False)
@@ -168,11 +219,11 @@ def plot_combined_heatmap(formal_rows: list[dict[str, str]], strengthened_rows: 
         1,
         2,
         figsize=(7.15, 4.7),
-        gridspec_kw={"width_ratios": [1.1, 0.9], "wspace": 0.55},
+        gridspec_kw={"width_ratios": [1.0, 1.0], "wspace": 0.62},
     )
     image = plot_matrix_panel(axes[0], formal_values, BACKBONES, "(a) Formal matrix")
     plot_matrix_panel(axes[1], strengthened_values, strengthened_backbones, "(b) Strengthened matrix")
-    fig.subplots_adjust(left=0.13, right=0.88, top=0.93, bottom=0.09)
+    fig.subplots_adjust(left=0.12, right=0.87, top=0.93, bottom=0.09)
     cbar_ax = fig.add_axes([0.91, 0.18, 0.014, 0.66])
     cbar = fig.colorbar(image, cax=cbar_ax)
     cbar.set_label("Mean macro-F1 delta vs CPU FP32", labelpad=3)
@@ -189,10 +240,11 @@ def main() -> int:
     args = parser.parse_args()
 
     _, plt = configure()
-    tradeoff = plot_tradeoff(read_csv(args.formal_method_summary), args.output_dir, plt)
+    formal_paired = read_csv(args.formal_paired_deltas)
+    tradeoff = plot_tradeoff(read_csv(args.formal_method_summary), formal_paired, args.output_dir, plt)
     plt.close("all")
     heatmap = plot_combined_heatmap(
-        read_csv(args.formal_paired_deltas),
+        formal_paired,
         read_csv(args.strengthened_paired_deltas),
         args.output_dir,
         plt,

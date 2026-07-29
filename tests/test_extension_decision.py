@@ -64,7 +64,7 @@ class ExtensionDecisionTests(unittest.TestCase):
             strengthened_rows=0,
         )
 
-        self.assertEqual(decision["status"], "BLOCKED_NEEDS_MANAGER_SCIENCE_DECISION")
+        self.assertEqual(decision["status"], "BLOCKED_NEEDS_PROJECT_SCIENCE_DECISION")
         self.assertFalse(decision["can_proceed_as_negative_measurement_paper"])
 
 

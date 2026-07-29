@@ -92,7 +92,7 @@ def build_extension_decision(
     gpu_references_preserve_quality = all(method["quality_preserved"] for method in strengthened_gpu.values())
 
     if strengthened_rows <= 0 or strengthened_dynamic["paired_cells"] <= 0:
-        status = "BLOCKED_NEEDS_MANAGER_SCIENCE_DECISION"
+        status = "BLOCKED_NEEDS_PROJECT_SCIENCE_DECISION"
         reason = "strengthened evidence is missing or has no paired dynamic_int8_cpu cells"
     elif severe_persists and gpu_references_preserve_quality:
         status = "PASS_EXTENSION_DECISION_CLOSED_NEGATIVE_RESULT"
@@ -101,7 +101,7 @@ def build_extension_decision(
         status = "PASS_EXTENSION_DECISION_CLOSED_POSITIVE_OR_MIXED_RESULT"
         reason = "strengthened evidence changed the dynamic INT8 risk interpretation but preserves a clear deployment tradeoff narrative"
     else:
-        status = "BLOCKED_NEEDS_MANAGER_SCIENCE_DECISION"
+        status = "BLOCKED_NEEDS_PROJECT_SCIENCE_DECISION"
         reason = "strengthened evidence does not yield a clear dynamic INT8/GPU deployment narrative"
 
     return {
